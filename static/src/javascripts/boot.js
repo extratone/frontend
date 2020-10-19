@@ -10,8 +10,12 @@ import { markTime } from 'lib/user-timing';
 import { captureOphanInfo } from 'lib/capture-ophan-info';
 import reportError from 'lib/report-error';
 import { cmp } from '@guardian/consent-management-platform';
-import { isInUsa } from 'projects/common/modules/commercial/geo-utils.js';
+import {
+    isInUsa,
+    getCountryCode,
+} from 'projects/common/modules/commercial/geo-utils.js';
 import { getCookie } from 'lib/cookies';
+import { isInAusCmpTest } from 'commercial/modules/cmp/test-aus';
 
 // Let webpack know where to get files from
 // __webpack_public_path__ is a special webpack variable
@@ -34,11 +38,15 @@ const go = () => {
 
         // Start CMP
         // CCPA and TCFv2
-        const browserId: ?string = getCookie('bwid') || undefined;;
+        const browserId: ?string = getCookie('bwid') || undefined;
         const pageViewId: ?string = config.get('ophan.pageViewId');
-        const pubData: { browserId?: ?string, pageViewId?: ?string } =
-            { browserId, pageViewId };
-        cmp.init({ pubData, isInUsa: isInUsa() });
+        const pubData: { browserId?: ?string, pageViewId?: ?string } = {
+            browserId,
+            pageViewId,
+        };
+
+        if (isInAusCmpTest()) cmp.init({ pubData, country: getCountryCode() });
+        else cmp.init({ pubData, isInUsa: isInUsa() });
 
         // 2. once standard is done, next is commercial
         if (process.env.NODE_ENV !== 'production') {

@@ -19,6 +19,7 @@ import { trackNonClickInteraction } from 'common/modules/analytics/google';
 import fetchJson from 'lib/fetch-json';
 import { mountDynamic } from "@guardian/automat-modules";
 import { getCookie } from 'lib/cookies';
+import { setupRemoteEpicInLiveblog } from 'common/modules/commercial/contributions-liveblog-utilities';
 
 import {
     getLastOneOffContributionDate,
@@ -249,8 +250,25 @@ const getStickyBottomBanner = (payload: {}) => {
 const getEpicUrl = (contentType: string): string => {
     const path = contentType === 'LiveBlog' ? 'liveblog-epic' : 'epic';
     return config.get('page.isDev') ?
-        `https://contributions.code.dev-guardianapis.com/${path}` :
+        `http://localhost:8082/${path}` :
         `https://contributions.guardianapis.com/${path}`
+};
+
+const renderLiveblogEpic = async (module, meta): Promise<void> => {
+    const component = await window.guardianPolyfilledImport(module.url);
+    const {
+        abTestName,
+        abTestVariant,
+        componentType,
+        products = [],
+        campaignCode,
+        campaignId
+    } = meta;
+
+    // TODO events
+
+    emitBeginEvent(campaignId);
+    setupRemoteEpicInLiveblog(component.ContributionsLiveblogEpic, module.props);
 };
 
 const renderEpic = async (module, meta): Promise<void> => {
@@ -384,7 +402,7 @@ export const fetchAndRenderEpic = async (): Promise<void> => {
     const page = config.get('page');
 
     // Liveblog epics are still selected and rendered natively
-    if (page.contentType === 'Article') {
+    if (page.contentType === 'Article' || page.contentType === 'LiveBlog') {
         try {
             const payload = await buildEpicPayload();
 
@@ -395,7 +413,12 @@ export const fetchAndRenderEpic = async (): Promise<void> => {
 
             if (json && json.data) {
                 const {module, meta} = json.data;
-                await renderEpic(module, meta);
+
+                if (page.contentType === 'Article') {
+                    await renderEpic(module, meta);
+                } else if (page.contentType === 'LiveBlog') {
+                    await renderLiveblogEpic(module, meta);
+                }
             }
 
         } catch (error) {

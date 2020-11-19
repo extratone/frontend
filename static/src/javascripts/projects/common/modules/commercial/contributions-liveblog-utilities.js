@@ -6,6 +6,7 @@ import { elementInView } from 'lib/element-inview';
 import fastdom from 'lib/fastdom-promise';
 import {submitInsertEvent, submitViewEvent} from "common/modules/commercial/acquisitions-ophan";
 import type {ComponentEventWithoutAction} from "common/modules/commercial/acquisitions-ophan";
+import { mountDynamic } from "@guardian/automat-modules";
 
 let isAutoUpdateHandlerBound = false;
 const INSERT_EPIC_AFTER_CLASS = 'js-insert-epic-after';
@@ -135,6 +136,19 @@ const addEpicToBlocks = (
             setupViewTracking(el, variant, parentTest);
         });
     });
+};
+
+export const setupRemoteEpicInLiveblog = (
+    Component: any,
+    props: object,
+): void => {
+    const blocks = getBlocksToInsertEpicAfter();
+    if (blocks[0]) {
+        const el = document.createElement('div');
+        // TODO - after!
+        blocks[0].parentNode.insertBefore(el, blocks[0]);
+        mountDynamic(el, Component, props, true);
+    }
 };
 
 export const setupEpicInLiveblog = (

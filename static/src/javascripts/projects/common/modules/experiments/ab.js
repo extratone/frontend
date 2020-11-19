@@ -79,7 +79,8 @@ export const getSynchronousTestsToRun = memoize(() =>
 export const getAsyncTestsToRun = (): Promise<
     $ReadOnlyArray<Runnable<ABTest>>
 > =>
-    Promise.all([getLiveblogEpicTest(), getEngagementBannerTestToRun()]).then(
+    // Promise.all([getLiveblogEpicTest(), getEngagementBannerTestToRun()]).then(
+    Promise.all([getEngagementBannerTestToRun()]).then(
         tests => tests.filter(Boolean)
     );
 

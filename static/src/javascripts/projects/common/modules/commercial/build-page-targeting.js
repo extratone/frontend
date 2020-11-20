@@ -70,7 +70,7 @@ const inskinTargetting = async (): Promise<string> => {
     if (vp && vp.width < 1560) {
         return 'f';
     }
-    const willShowPrivacyMessage:boolean = await cmp.willShowPrivacyMessage();
+    const willShowPrivacyMessage: boolean = await cmp.willShowPrivacyMessage();
     return willShowPrivacyMessage ? 'f' : 't';
 };
 
@@ -307,11 +307,11 @@ const getPageTargeting = async (): { [key: string]: mixed } => {
     if (Object.keys(myPageTargetting).length !== 0) return myPageTargetting;
 
     let resolveOnConsentChange;
-    const pageTargetingPromise = new Promise((resolve) => {
+    const pageTargetingPromise = new Promise(resolve => {
         resolveOnConsentChange = resolve;
     });
 
-    onConsentChange(async (state) => {
+    onConsentChange(async state => {
         let canRun: boolean | null;
         if (state.ccpa) {
             // CCPA mode

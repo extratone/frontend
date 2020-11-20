@@ -190,7 +190,6 @@ object ArticlePicker {
      */
     val userInDCRGroup = !ActiveExperiments.isParticipating(DotcomRendering)
     // true if user is not participating / not in variant
-
     val userInDCRBubble = ActiveExperiments.isParticipating(DCRBubble)
 
     val tier =

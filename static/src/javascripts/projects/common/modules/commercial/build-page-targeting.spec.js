@@ -335,45 +335,22 @@ describe('Build Page Targeting', () => {
     });
 
     describe('Breakpoint targeting', () => {
-        it('should set correct breakpoint targeting for a mobile device', async () => {
-            getBreakpoint.mockReturnValue('mobile');
-            expect((await getPageTargeting()).bp).toEqual('mobile');
-        });
-
-        it('should set correct breakpoint targeting for a medium mobile device', async () => {
-            getBreakpoint.mockReturnValue('mobileMedium');
-            expect((await getPageTargeting()).bp).toEqual('mobile');
-        });
-
-        it('should set correct breakpoint targeting for a mobile device in landscape mode', async () => {
-            getBreakpoint.mockReturnValue('mobileLandscape');
-            expect((await getPageTargeting()).bp).toEqual('mobile');
-        });
-
-        it('should set correct breakpoint targeting for a phablet device', async () => {
-            getBreakpoint.mockReturnValue('phablet');
-            expect((await getPageTargeting()).bp).toEqual('tablet');
-        });
-
-        it('should set correct breakpoint targeting for a tablet device', async () => {
-            getBreakpoint.mockReturnValue('tablet');
-            expect((await getPageTargeting()).bp).toEqual('tablet');
-        });
-
-        it('should set correct breakpoint targeting for a desktop device', async () => {
-            getBreakpoint.mockReturnValue('desktop');
-            expect((await getPageTargeting()).bp).toEqual('desktop');
-        });
-
-        it('should set correct breakpoint targeting for a leftCol device', async () => {
-            getBreakpoint.mockReturnValue('leftCol');
-            expect((await getPageTargeting()).bp).toEqual('desktop');
-        });
-
-        it('should set correct breakpoint targeting for a wide device', async () => {
-            getBreakpoint.mockReturnValue('wide');
-            expect((await getPageTargeting()).bp).toEqual('desktop');
-        });
+        it.each([
+            ['mobile', 'mobile'],
+            ['mobileMedium', 'mobile'],
+            ['mobileLandscape', 'mobile'],
+            ['phablet', 'tablet'],
+            ['tablet', 'tablet'],
+            ['desktop', 'desktop'],
+            ['leftCol', 'desktop'],
+            ['wide', 'desktop'],
+        ])(
+            'should set correct breakpoint targetting for a %s device (%s)',
+            async (mock, value) => {
+                getBreakpoint.mockReturnValue(mock);
+                expect((await getPageTargeting()).bp).toEqual(value);
+            }
+        );
     });
 
     describe('Build Page Targeting (ad-free)', () => {
@@ -406,32 +383,20 @@ describe('Build Page Targeting', () => {
     });
 
     describe('Referrer', () => {
-        it('should set ref to Facebook', async () => {
-            getReferrer.mockReturnValue(
-                'https://www.facebook.com/feel-the-force'
-            );
-            expect((await getPageTargeting()).ref).toEqual('facebook');
-        });
-
-        it('should set ref to Twitter', async () => {
-            getReferrer.mockReturnValue(
-                'https://www.t.co/you-must-unlearn-what-you-have-learned'
-            );
-            expect((await getPageTargeting()).ref).toEqual('twitter');
-        });
-
-        it('should set ref to reddit', async () => {
-            getReferrer.mockReturnValue(
-                'https://www.reddit.com/its-not-my-fault'
-            );
-            expect((await getPageTargeting()).ref).toEqual('reddit');
-        });
-
-        it('should set ref to google', async () => {
-            getReferrer.mockReturnValue(
-                'https://www.google.com/i-find-your-lack-of-faith-distrubing'
-            );
-            expect((await getPageTargeting()).ref).toEqual('google');
+        test.each([
+            ['facebook', 'https://www.facebook.com/feel-the-force'],
+            [
+                'twitter',
+                'https://www.t.co/you-must-unlearn-what-you-have-learned',
+            ],
+            ['reddit', 'https://www.reddit.com/its-not-my-fault'],
+            [
+                'google',
+                'https://www.google.com/i-find-your-lack-of-faith-distrubing',
+            ],
+        ])('should set ref to %s', async (ref, url) => {
+            getReferrer.mockReturnValue(url);
+            expect((await getPageTargeting()).ref).toEqual(ref);
         });
 
         it('should set ref empty string if referrer does not match', async () => {

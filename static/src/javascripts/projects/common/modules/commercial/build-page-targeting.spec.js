@@ -335,6 +335,7 @@ describe('Build Page Targeting', () => {
     });
 
     describe('Breakpoint targeting', () => {
+        // $FlowFixMe -- it.each does not have a type
         it.each([
             ['mobile', 'mobile'],
             ['mobileMedium', 'mobile'],
@@ -383,7 +384,8 @@ describe('Build Page Targeting', () => {
     });
 
     describe('Referrer', () => {
-        test.each([
+        // $FlowFixMe -- it.each does not have a type
+        it.each([
             ['facebook', 'https://www.facebook.com/feel-the-force'],
             [
                 'twitter',

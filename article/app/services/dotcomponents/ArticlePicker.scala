@@ -1,7 +1,7 @@
 package services.dotcomponents
 
 import model.ArticlePage
-import experiments.{ActiveExperiments, Control, DCRBubble, DotcomRendering, Excluded, Experiment, Participant}
+import experiments.{ActiveExperiments, Control, DotcomRendering, Excluded, Experiment, Participant}
 import model.PageWithStoryPackage
 import implicits.Requests._
 import model.liveblog.{
@@ -189,14 +189,12 @@ object ArticlePicker {
         We are then going to expose DCR to { the control group and the excluded } and reduce the size of the variant to 10%.
      */
     val userInDCRGroup = !ActiveExperiments.isParticipating(DotcomRendering)
-    // true if user is not participating / not in variant
-    val userInDCRBubble = ActiveExperiments.isParticipating(DCRBubble)
+    // true if user is not in variant
 
     val tier =
       if (request.forceDCR) RemoteRender // dcrForced doesn't check the switch. This means that RemoteRender
       // is always going to be selected if `?dcr=true`, regardless of the value of the switch.
       else if (dcrDisabled(request)) LocalRenderArticle // Switch off implies dcrDisabled
-      else if (userInDCRBubble) RemoteRender
       else if (userInDCRGroup && hasPrimaryFeatures) RemoteRender
       else LocalRenderArticle
 
